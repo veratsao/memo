@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>極簡備忘錄 Minimal Memo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #f5f5f5;
+      --card-bg: #ffffff;
+      --text-main: #1a1a1a;
+      --text-muted: #777777;
+      --border-color: #e0e0e0;
+      --accent-color: #1a1a1a;
+      --active-bg: #f0f0f0;
+      --hand-font: 'Caveat', cursive, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px 12px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .hand-emoji {
+      font-family: var(--hand-font);
+      font-size: 1.35rem;
+      display: inline-block;
+      filter: grayscale(100%);
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+    }
+
+    .sync-status {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      background: var(--card-bg);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-bar:focus {
+      border-color: var(--accent-color);
+    }
+
+    .folders-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--card-bg);
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+    }
+
+    .folder-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .manage-btn {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-decoration: underline;
+      font-weight: 700;
+    }
+
+    .folder-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 4px 2px;
+      scrollbar-width: none;
+    }
+
+    .folder-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .folder-btn {
+      flex: 0 0 auto;
+      padding: 8px 16px;
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      white-space: nowrap;
+      color: var(--text-main);
+    }
+
+    .folder-btn.active {
+      background-color: var(--accent-color);
+      color: #ffffff;
+      border-color: var(--accent-color);
+    }
+
+    .folder-btn.active .hand-emoji {
+      filter: grayscale(100%) brightness(200%);
+    }
+
+    .sub-folder-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px;
+    }
+
+    .sub-folder-btn {
+      flex: 0 0 auto;
+      padding: 5px 14px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .sub-folder-btn.active {
+      color: var(--text-main);
+      border-color: var(--accent-color);
+      background-color: var(--active-bg);
+      font-weight: 700;
+    }
+
+    .create-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .memo-textarea {
+      width: 100%;
+      height: 80px;
+      border: none;
+      resize: none;
+      font-size: 0.95rem;
+      outline: none;
+      background: transparent;
+      line-height: 1.5;
+    }
+
+    .image-preview-area {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .img-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--border-color);
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-color);
+      padding-top: 12px;
+    }
+
+    .upload-btn {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .upload-btn input {
+      display: none;
+    }
+
+    .save-btn {
+      padding: 8px 20px;
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .memo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .memo-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .memo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+    }
+
+    .memo-tags {
+      display: flex;
+      gap: 8px;
+    }
+
+    .memo-tag {
+      background: var(--active-bg);
+      color: var(--text-main);
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+
+    .memo-content {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      color: var(--text-main);
+    }
+
+    .memo-images {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .memo-images img {
+      width: 100px;
+      height: 100px;
+      border-radius: 10px;
+      object-fit: cover;
+      cursor: zoom-in;
+      border: 1px solid var(--border-color);
+      transition: opacity 0.2s;
+    }
+
+    .memo-images img:hover {
+      opacity: 0.85;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .gas-settings {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .gas-input-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .gas-input {
+      flex: 1;
+      padding: 6px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      outline: none;
+    }
+
+    .gas-status-text {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      touch-action: pan-y;
+    }
+
+    .lightbox-img-wrapper {
+      position: relative;
+      max-width: 90%;
+      max-height: 85vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lightbox img {
+      max-width: 100%;
+      max-height: 85vh;
+      border-radius: 12px;
+      user-select: none;
+    }
+
+    .lb-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      padding: 12px 16px;
+      cursor: pointer;
+      border-radius: 50%;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .lb-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .lb-prev { left: -50px; }
+    .lb-next { right: -50px; }
+
+    @media (max-width: 600px) {
+      .lb-prev { left: 10px; }
+      .lb-next { right: 10px; }
+    }
+
+    .lb-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 900;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 480px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .category-manage-item {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cat-item-top {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .sub-tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--active-bg);
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .sub-tag-chip span {
+      cursor: pointer;
+      color: #999;
+      margin-left: 4px;
+    }
+
+    .add-cat-form {
+      display: flex;
+      gap: 8px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <header>
+      <div class="header-top">
+        <h1><span class="hand-emoji">📝</span> 極簡備忘錄</h1>
+        <span id="syncStatus" class="sync-status">狀態：尚未設定 GAS 網址</span>
+      </div>
+      <input type="text" id="searchInput" class="search-bar" placeholder="搜尋關鍵字...">
+    </header>
+
+    <!-- 分類選單 -->
+    <div class="folders-section">
+      <div class="folder-header-bar">
+        <span>分類選擇（左右滑動）</span>
+        <button class="manage-btn" onclick="openModal()">⚙️ 管理分類</button>
+      </div>
+      <div class="folder-scroll" id="mainFolderList"></div>
+      <div class="sub-folder-scroll" id="subFolderList"></div>
+    </div>
+
+    <!-- 撰寫備忘錄 -->
+    <div class="create-card">
+      <textarea id="memoInput" class="memo-textarea" placeholder="寫下新的紀錄..."></textarea>
+      <div id="imagePreviewContainer" class="image-preview-area"></div>
+      <div class="card-actions">
+        <label class="upload-btn">
+          <span class="hand-emoji">📷</span> 夾帶圖片
+          <input type="file" id="imageInput" accept="image/*" multiple>
+        </label>
+        <button id="saveBtn" class="save-btn">儲存備忘</button>
+      </div>
+    </div>
+
+    <!-- GAS 雲端設定 -->
+    <div class="gas-settings">
+      <div class="gas-input-group">
+        <span>GAS URL:</span>
+        <input type="text" id="gasUrlInput" class="gas-input" placeholder="貼上 Google App Script 網址">
+        <button onclick="saveGasUrl()" style="padding: 6px 12px; border-radius: 12px; border:1px solid var(--border-color); cursor: pointer; background: #fff;">儲存</button>
+        <button onclick="syncFromCloud()" style="padding: 6px 12px; border-radius: 12px; border:1px solid var(--border-color); cursor: pointer; background: #fff;">手動讀取</button>
+      </div>
+      <div id="gasDetailStatus" class="gas-status-text">未設定雲端自動備份</div>
+    </div>
+
+    <!-- 備忘清單 -->
+    <div class="memo-list" id="memoList"></div>
+  </div>
+
+  <!-- 燈箱相簿 -->
+  <div id="lightbox" class="lightbox">
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+    <div class="lightbox-img-wrapper" id="lbWrapper">
+      <button class="lb-nav-btn lb-prev" onclick="prevLightboxImage(event)">‹</button>
+      <img id="lightboxImg" src="" alt="放大圖片">
+      <button class="lb-nav-btn lb-next" onclick="nextLightboxImage(event)">›</button>
+    </div>
+  </div>
+
+  <!-- 分類管理視窗 -->
+  <div id="categoryModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>自訂分類管理</span>
+        <button class="close-modal" onclick="closeModal()">✕</button>
+      </div>
+
+      <div id="categoryManageList"></div>
+
+      <div class="add-cat-form">
+        <input type="text" id="newCatIcon" style="width: 50px; padding: 6px; border-radius: 8px; border:1px solid var(--border-color);" placeholder="圖示" value="📌">
+        <input type="text" id="newCatName" style="flex: 1; padding: 6px; border-radius: 8px; border:1px solid var(--border-color);" placeholder="新主分類名稱">
+        <button onclick="addMainCategory()" style="padding: 6px 12px; border-radius: 8px; border:none; background:var(--accent-color); color:#fff; cursor: pointer;">新增</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let categories = JSON.parse(localStorage.getItem('memo_categories')) || [
+      { id: 'all', name: '全部', icon: '📝', subs: ['全部'] },
+      { id: 'work', name: '工作', icon: '💼', subs: ['全部', '專案', '會議', '待辦'] },
+      { id: 'life', name: '生活', icon: '🏠', subs: ['全部', '購物', '家務'] },
+      { id: 'idea', name: '靈感', icon: '💡', subs: ['全部', '隨筆', '閱讀'] }
+    ];
+
+    let currentMain = 'all';
+    let currentSub = '全部';
+    let memos = JSON.parse(localStorage.getItem('memos')) || [];
+    let currentBase64Images = [];
+
+    let currentLightboxImages = [];
+    let currentLightboxIndex = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderMainFolders();
+      renderSubFolders();
+      renderMemos();
+
+      const savedUrl = localStorage.getItem('gas_script_url');
+      if (savedUrl) {
+        document.getElementById('gasUrlInput').value = savedUrl;
+        syncFromCloud();
+      }
+
+      setupLightboxTouch();
+    });
+
+    function updateStatus(text, isError = false) {
+      const timeStr = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const fullMessage = `狀態：${text}`;
+      
+      document.getElementById('syncStatus').innerText = fullMessage;
+      document.getElementById('gasDetailStatus').innerText = `[${timeStr}] ${text}`;
+      
+      if (isError) {
+        document.getElementById('syncStatus').style.color = '#d9534f';
+        document.getElementById('gasDetailStatus').style.color = '#d9534f';
+      } else {
+        document.getElementById('syncStatus').style.color = 'var(--text-muted)';
+        document.getElementById('gasDetailStatus').style.color = 'var(--text-muted)';
+      }
+    }
+
+    function renderMainFolders() {
+      const container = document.getElementById('mainFolderList');
+      container.innerHTML = categories.map(cat => `
+        <button class="folder-btn ${cat.id === currentMain ? 'active' : ''}" onclick="selectMainFolder('${cat.id}')">
+          <span class="hand-emoji">${cat.icon}</span>
+          <span>${cat.name}</span>
+        </button>
+      `).join('');
+    }
+
+    function renderSubFolders() {
+      const container = document.getElementById('subFolderList');
+      const activeCat = categories.find(c => c.id === currentMain);
+
+      if (!activeCat || !activeCat.subs) {
+        container.innerHTML = '';
+        return;
+      }
+
+      container.innerHTML = activeCat.subs.map(sub => `
+        <button class="sub-folder-btn ${sub === currentSub ? 'active' : ''}" onclick="selectSubFolder('${sub}')">
+          ${sub}
+        </button>
+      `).join('');
+    }
+
+    function selectMainFolder(id) {
+      currentMain = id;
+      currentSub = '全部';
+      renderMainFolders();
+      renderSubFolders();
+      renderMemos();
+    }
+
+    function selectSubFolder(sub) {
+      currentSub = sub;
+      renderSubFolders();
+      renderMemos();
+    }
+
+    function openModal() {
+      renderCategoryManager();
+      document.getElementById('categoryModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('categoryModal').style.display = 'none';
+      saveCategories();
+      renderMainFolders();
+      renderSubFolders();
+      renderMemos();
+    }
+
+    function renderCategoryManager() {
+      const container = document.getElementById('categoryManageList');
+      const editableCategories = categories.filter(c => c.id !== 'all');
+      
+      container.innerHTML = editableCategories.map(cat => `
+        <div class="category-manage-item">
+          <div class="cat-item-top">
+            <span class="hand-emoji">${cat.icon}</span>
+            <strong style="flex:1;">${cat.name}</strong>
+            <button class="delete-btn" onclick="deleteMainCategory('${cat.id}')">刪除</button>
+          </div>
+          <div>
+            <span style="font-size:0.75rem; color:#888;">子分類：</span>
+            ${cat.subs.filter(s => s !== '全部').map(sub => `
+              <span class="sub-tag-chip">
+                ${sub} <span onclick="deleteSubCategory('${cat.id}', '${sub}')">✕</span>
+              </span>
+            `).join('')}
+          </div>
+          <div style="display:flex; gap:6px; margin-top:4px;">
+            <input type="text" id="addSubInput_${cat.id}" placeholder="+ 新增子分類" style="font-size:0.8rem; padding:4px 8px; border-radius:8px; border:1px solid var(--border-color); flex:1;">
+            <button onclick="addSubCategory('${cat.id}')" style="font-size:0.8rem; padding:4px 10px; border-radius:8px; border:1px solid var(--border-color); cursor:pointer;">新增</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addMainCategory() {
+      const icon = document.getElementById('newCatIcon').value.trim() || '📌';
+      const name = document.getElementById('newCatName').value.trim();
+      if (!name) return;
+
+      categories.push({
+        id: 'cat_' + Date.now(),
+        name: name,
+        icon: icon,
+        subs: ['全部', '一般']
+      });
+
+      document.getElementById('newCatName').value = '';
+      saveCategories();
+      renderCategoryManager();
+    }
+
+    // 重構精確刪除主分類邏輯
+    function deleteMainCategory(catId) {
+      if (catId === 'all') return;
+      const targetCat = categories.find(c => c.id === catId);
+      if (!targetCat) return;
+
+      if (confirm(`確定要刪除「${targetCat.name}」分類嗎？`)) {
+        // 1. 從選單陣列中刪除
+        categories = categories.filter(c => c.id !== catId);
+        
+        // 2. 將原本屬於該分類的備忘錄重置移到「all (全部)」
+        memos.forEach(m => {
+          if (m.mainFolder === catId) {
+            m.mainFolder = 'all';
+            m.subFolder = '一般';
+          }
+        });
+
+        // 3. 重置選取的當前分類狀態
+        if (currentMain === catId) {
+          currentMain = 'all';
+          currentSub = '全部';
+        }
+        
+        // 4. 保存並更新 UI
+        saveCategories();
+        saveData();
+        renderCategoryManager();
+      }
+    }
+
+    function addSubCategory(catId) {
+      const targetCat = categories.find(c => c.id === catId);
+      if (!targetCat) return;
+
+      const input = document.getElementById(`addSubInput_${catId}`);
+      const val = input.value.trim();
+      if (val && !targetCat.subs.includes(val)) {
+        targetCat.subs.push(val);
+        saveCategories();
+        renderCategoryManager();
+      }
+    }
+
+    function deleteSubCategory(catId, subName) {
+      const targetCat = categories.find(c => c.id === catId);
+      if (!targetCat) return;
+
+      targetCat.subs = targetCat.subs.filter(s => s !== subName);
+      saveCategories();
+      renderCategoryManager();
+    }
+
+    function saveCategories() {
+      localStorage.setItem('memo_categories', JSON.stringify(categories));
+    }
+
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+      const files = Array.from(e.target.files);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          currentBase64Images.push(event.target.result);
+          renderImagePreviews();
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    function renderImagePreviews() {
+      const container = document.getElementById('imagePreviewContainer');
+      container.innerHTML = currentBase64Images.map(imgSrc => `
+        <img src="${imgSrc}" class="img-preview">
+      `).join('');
+    }
+
+    function openLightbox(memoId, index) {
+      const targetMemo = memos.find(m => m.id === memoId);
+      if (!targetMemo || !targetMemo.images) return;
+
+      currentLightboxImages = targetMemo.images;
+      currentLightboxIndex = index;
+
+      updateLightboxImage();
+      document.getElementById('lightbox').style.display = 'flex';
+    }
+
+    function updateLightboxImage() {
+      const imgElem = document.getElementById('lightboxImg');
+      imgElem.src = currentLightboxImages[currentLightboxIndex];
+    }
+
+    function prevLightboxImage(e) {
+      if (e) e.stopPropagation();
+      if (currentLightboxIndex > 0) {
+        currentLightboxIndex--;
+        updateLightboxImage();
+      }
+    }
+
+    function nextLightboxImage(e) {
+      if (e) e.stopPropagation();
+      if (currentLightboxIndex < currentLightboxImages.length - 1) {
+        currentLightboxIndex++;
+        updateLightboxImage();
+      }
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').style.display = 'none';
+    }
+
+    function setupLightboxTouch() {
+      const lb = document.getElementById('lightbox');
+      let startX = 0;
+
+      lb.addEventListener('touchstart', e => {
+        startX = e.touches[0].clientX;
+      }, { passive: true });
+
+      lb.addEventListener('touchend', e => {
+        const endX = e.changedTouches[0].clientX;
+        const diffX = startX - endX;
+
+        if (Math.abs(diffX) > 40) {
+          if (diffX > 0) {
+            nextLightboxImage();
+          } else {
+            prevLightboxImage();
+          }
+        }
+      }, { passive: true });
+
+      document.addEventListener('keydown', e => {
+        if (lb.style.display === 'flex') {
+          if (e.key === 'ArrowLeft') prevLightboxImage();
+          if (e.key === 'ArrowRight') nextLightboxImage();
+          if (e.key === 'Escape') closeLightbox();
+        }
+      });
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const text = document.getElementById('memoInput').value.trim();
+      if (!text && currentBase64Images.length === 0) return;
+
+      const newMemo = {
+        id: Date.now(),
+        mainFolder: currentMain === 'all' ? 'work' : currentMain,
+        subFolder: currentSub === '全部' ? '隨筆' : currentSub,
+        content: text,
+        images: [...currentBase64Images],
+        date: new Date().toLocaleString('zh-TW', { hour12: false })
+      };
+
+      memos.unshift(newMemo);
+      saveData();
+
+      document.getElementById('memoInput').value = '';
+      currentBase64Images = [];
+      renderImagePreviews();
+      renderMemos();
+    });
+
+    function deleteMemo(id) {
+      if (confirm('確定要刪除這筆備忘紀錄嗎？')) {
+        memos = memos.filter(m => m.id !== id);
+        saveData();
+        renderMemos();
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('input', renderMemos);
+
+    function renderMemos() {
+      const keyword = document.getElementById('searchInput').value.toLowerCase();
+      const container = document.getElementById('memoList');
+
+      const filtered = memos.filter(memo => {
+        const matchesFolder = (currentMain === 'all' || memo.mainFolder === currentMain) &&
+                              (currentSub === '全部' || memo.subFolder === currentSub);
+        const matchesSearch = memo.content.toLowerCase().includes(keyword);
+        return matchesFolder && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color: var(--text-muted); margin-top: 30px;">尚無備忘紀錄</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(memo => {
+        const mainCat = categories.find(c => c.id === memo.mainFolder) || { name: '預設/未分類', icon: '📁' };
+        return `
+          <div class="memo-item">
+            <div class="memo-header">
+              <div class="memo-tags">
+                <span class="memo-tag">${mainCat.icon} ${mainCat.name}</span>
+                <span class="memo-tag"># ${memo.subFolder}</span>
+              </div>
+              <div>
+                <span style="color:var(--text-muted); margin-right:8px;">${memo.date}</span>
+                <button class="delete-btn" onclick="deleteMemo(${memo.id})">✕</button>
+              </div>
+            </div>
+            ${memo.content ? `<div class="memo-content">${escapeHtml(memo.content)}</div>` : ''}
+            ${memo.images && memo.images.length > 0 ? `
+              <div class="memo-images">
+                ${memo.images.map((img, idx) => `<img src="${img}" onclick="openLightbox(${memo.id}, ${idx})">`).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function saveData() {
+      localStorage.setItem('memos', JSON.stringify(memos));
+      syncToCloud();
+    }
+
+    function saveGasUrl() {
+      const url = document.getElementById('gasUrlInput').value.trim();
+      localStorage.setItem('gas_script_url', url);
+      updateStatus('GAS URL 已儲存');
+      syncToCloud();
+    }
+
+    function syncToCloud() {
+      const gasUrl = localStorage.getItem('gas_script_url');
+      if (!gasUrl) {
+        updateStatus('未設定 GAS 網址（僅本機保存）');
+        return;
+      }
+
+      updateStatus('自動備份上傳中...');
+
+      fetch(gasUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(memos)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          updateStatus('已自動備份至 GAS 雲端');
+        } else {
+          updateStatus('備份回應異常', true);
+        }
+      })
+      .catch(err => {
+        console.error('GAS 自動同步錯誤:', err);
+        updateStatus('自動備份失敗', true);
+      });
+    }
+
+    function syncFromCloud() {
+      const gasUrl = localStorage.getItem('gas_script_url');
+      if (!gasUrl) {
+        updateStatus('請先輸入並儲存 GAS 網址', true);
+        return;
+      }
+
+      updateStatus('讀取雲端資料中...');
+
+      fetch(gasUrl)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          memos = data;
+          localStorage.setItem('memos', JSON.stringify(memos));
+          renderMemos();
+          updateStatus('雲端資料同步完成');
+        } else {
+          updateStatus('雲端無資料或格式不符');
+        }
+      })
+      .catch(err => {
+        console.error('GAS 讀取錯誤:', err);
+        updateStatus('雲端讀取失敗', true);
+      });
+    }
+  </script>
+</body>
+</html>
