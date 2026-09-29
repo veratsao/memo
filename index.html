@@ -2,551 +2,598 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>備忘錄</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>極簡備忘錄 Minimal Memo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg-main: #fcfcfc;
-      --bg-card: #ffffff;
-      --text-primary: #111111;
-      --text-secondary: #777777;
-      --text-tertiary: #bbbbbb;
-      --border-light: #f0f0f0;
-      --accent: #000000;
-      --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --bg-color: #f5f5f5;
+      --card-bg: #ffffff;
+      --text-main: #1a1a1a;
+      --text-muted: #777777;
+      --border-color: #e0e0e0;
+      --accent-color: #1a1a1a;
+      --active-bg: #f0f0f0;
+      --hand-font: 'Caveat', cursive, sans-serif;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: var(--font-stack);
-      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
     }
 
     body {
-      background-color: var(--bg-main);
-      color: var(--text-primary);
+      background-color: var(--bg-color);
+      color: var(--text-main);
       display: flex;
       justify-content: center;
       min-height: 100vh;
-      overflow-x: hidden;
+      padding: 20px 12px;
     }
 
-    .app-viewport {
+    .app-container {
       width: 100%;
-      max-width: 480px;
-      min-height: 100vh;
+      max-width: 680px;
       display: flex;
       flex-direction: column;
-      position: relative;
-      padding-bottom: 80px;
+      gap: 18px;
     }
 
-    /* 頂部固定導覽 */
+    .hand-emoji {
+      font-family: var(--hand-font);
+      font-size: 1.35rem;
+      display: inline-block;
+      filter: grayscale(100%);
+    }
+
     header {
-      position: sticky;
-      top: 0;
-      background: rgba(252, 252, 252, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index: 10;
-      padding: 16px 20px 8px 20px;
-    }
-
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 12px;
-    }
-
-    h1 {
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: -0.5px;
-    }
-
-    .sync-badge {
-      font-size: 0.75rem;
-      color: var(--text-tertiary);
-      cursor: pointer;
-    }
-
-    /* 搜尋欄 */
-    .search-wrapper {
-      position: relative;
-      margin-bottom: 8px;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 10px 14px;
-      border: none;
-      background: #f2f2f2;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      color: var(--text-primary);
-      outline: none;
-    }
-
-    /* 分類滑動列 */
-    .nav-section {
-      padding: 8px 20px 12px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .folder-bar, .sub-folder-bar {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .folder-bar::-webkit-scrollbar, .sub-folder-bar::-webkit-scrollbar {
-      display: none;
-    }
-
-    .chip {
-      flex: 0 0 auto;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      background: transparent;
-      border: none;
-      cursor: pointer;
-    }
-
-    .chip.active {
-      background: var(--accent);
-      color: #ffffff;
-      font-weight: 500;
-    }
-
-    .sub-chip {
-      flex: 0 0 auto;
-      padding: 4px 10px;
-      font-size: 0.78rem;
-      color: var(--text-tertiary);
-      border: none;
-      background: transparent;
-      cursor: pointer;
-    }
-
-    .sub-chip.active {
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    .manage-link {
-      font-size: 0.78rem;
-      color: var(--text-tertiary);
-      background: none;
-      border: none;
-      cursor: pointer;
-      margin-left: auto;
-    }
-
-    /* 備忘錄列表 */
-    .memo-feed {
-      padding: 0 20px;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
-    .memo-card {
-      background: var(--bg-card);
-      padding: 16px;
-      border-radius: 12px;
-      border: 1px solid var(--border-light);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .card-meta {
+    .header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.75rem;
-      color: var(--text-tertiary);
     }
 
-    .card-tags {
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
       display: flex;
-      gap: 6px;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
     }
 
-    .card-tag {
-      color: var(--text-secondary);
-      background: var(--bg-main);
-      padding: 2px 6px;
-      border-radius: 4px;
+    .sync-status {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
-    .card-text {
-      font-size: 0.95rem;
-      line-height: 1.5;
-      color: var(--text-primary);
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .card-grid-imgs {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .card-grid-imgs img {
+    .search-bar {
       width: 100%;
-      height: 70px;
-      object-fit: cover;
-      border-radius: 6px;
-      cursor: zoom-in;
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      background: var(--card-bg);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
     }
 
-    .btn-action-ghost {
+    .search-bar:focus {
+      border-color: var(--accent-color);
+    }
+
+    .folders-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--card-bg);
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+    }
+
+    .folder-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .manage-btn {
       background: none;
       border: none;
-      color: var(--text-tertiary);
-      font-size: 0.78rem;
+      color: var(--text-main);
+      font-size: 0.82rem;
       cursor: pointer;
-      padding: 2px 4px;
+      text-decoration: underline;
+      font-weight: 700;
     }
 
-    .btn-action-ghost:hover {
-      color: var(--text-primary);
+    .folder-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 4px 2px;
+      scrollbar-width: none;
     }
 
-    /* FAB 按鈕 */
-    .fab {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 56px;
-      height: 56px;
-      border-radius: 28px;
-      background: var(--accent);
+    .folder-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .folder-btn {
+      flex: 0 0 auto;
+      padding: 8px 16px;
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      white-space: nowrap;
+      color: var(--text-main);
+    }
+
+    .folder-btn.active {
+      background-color: var(--accent-color);
       color: #ffffff;
+      border-color: var(--accent-color);
+    }
+
+    .folder-btn.active .hand-emoji {
+      filter: grayscale(100%) brightness(200%);
+    }
+
+    .sub-folder-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px;
+    }
+
+    .sub-folder-btn {
+      flex: 0 0 auto;
+      padding: 5px 14px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .sub-folder-btn.active {
+      color: var(--text-main);
+      border-color: var(--accent-color);
+      background-color: var(--active-bg);
+      font-weight: 700;
+    }
+
+    .create-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .memo-textarea {
+      width: 100%;
+      height: 80px;
       border: none;
-      font-size: 1.8rem;
+      resize: none;
+      font-size: 0.95rem;
+      outline: none;
+      background: transparent;
+      line-height: 1.5;
+    }
+
+    .image-preview-area {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .img-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--border-color);
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-color);
+      padding-top: 12px;
+    }
+
+    .upload-btn {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .upload-btn input {
+      display: none;
+    }
+
+    .save-btn {
+      padding: 8px 20px;
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .memo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .memo-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .memo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+    }
+
+    .memo-tags {
+      display: flex;
+      gap: 8px;
+    }
+
+    .memo-tag {
+      background: var(--active-bg);
+      color: var(--text-main);
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+
+    .memo-content {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      color: var(--text-main);
+    }
+
+    .memo-images {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .memo-images img {
+      width: 100px;
+      height: 100px;
+      border-radius: 10px;
+      object-fit: cover;
+      cursor: zoom-in;
+      border: 1px solid var(--border-color);
+      transition: opacity 0.2s;
+    }
+
+    .memo-images img:hover {
+      opacity: 0.85;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .gas-settings {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .gas-input-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .gas-input {
+      flex: 1;
+      padding: 6px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      outline: none;
+    }
+
+    .gas-status-text {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      touch-action: pan-y;
+    }
+
+    .lightbox-img-wrapper {
+      position: relative;
+      max-width: 90%;
+      max-height: 85vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      cursor: pointer;
-      z-index: 20;
     }
 
-    /* 半開視窗 */
-    .sheet-modal {
+    .lightbox img {
+      max-width: 100%;
+      max-height: 85vh;
+      border-radius: 12px;
+      user-select: none;
+    }
+
+    .lb-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      padding: 12px 16px;
+      cursor: pointer;
+      border-radius: 50%;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .lb-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .lb-prev { left: -50px; }
+    .lb-next { right: -50px; }
+
+    @media (max-width: 600px) {
+      .lb-prev { left: 10px; }
+      .lb-next { right: 10px; }
+    }
+
+    .lb-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .modal {
+      display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.3);
-      backdrop-filter: blur(4px);
-      z-index: 100;
-      display: none;
-      justify-content: flex-end;
-      flex-direction: column;
+      background: rgba(0,0,0,0.5);
+      z-index: 900;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
     }
 
-    .sheet-content {
-      background: var(--bg-card);
-      border-top-left-radius: 20px;
-      border-top-right-radius: 20px;
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 480px;
       padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 16px;
       max-height: 85vh;
+      overflow-y: auto;
     }
 
-    .sheet-header {
+    .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      font-weight: 700;
     }
 
-    .sheet-title {
-      font-size: 1rem;
-      font-weight: 600;
-    }
-
-    .sheet-textarea {
-      width: 100%;
-      height: 120px;
+    .close-modal {
+      background: none;
       border: none;
-      outline: none;
-      font-size: 1rem;
-      line-height: 1.5;
-      resize: none;
-    }
-
-    .sheet-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid var(--border-light);
-      padding-top: 12px;
-    }
-
-    .btn-black {
-      background: var(--accent);
-      color: #ffffff;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 1.2rem;
       cursor: pointer;
     }
 
-    .btn-small {
-      padding: 4px 8px;
-      font-size: 0.75rem;
-      border-radius: 4px;
-      border: 1px solid #ddd;
-      background: #fff;
-      cursor: pointer;
-    }
-
-    /* 高效能相簿燈箱 (支援GPU渲染與雙指縮放) */
-    .lightbox {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.95);
-      z-index: 200;
-      display: none;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 0;
-      touch-action: none;
-    }
-
-    .lightbox-header {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 20px;
-      z-index: 210;
-    }
-
-    .lightbox-counter {
-      color: #fff;
-      font-size: 0.85rem;
-      opacity: 0.8;
-    }
-
-    .lightbox-viewport {
-      flex: 1;
-      width: 100%;
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .lightbox-slider {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      will-change: transform;
-      transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-    }
-
-    .lightbox-slide {
-      flex: 0 0 100%;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .lightbox-slide img {
-      max-width: 95%;
-      max-height: 80vh;
-      object-fit: contain;
-      will-change: transform;
-      user-select: none;
-    }
-
-    .settings-drawer {
-      background: var(--bg-main);
-      padding: 12px 20px;
-      border-bottom: 1px solid var(--border-light);
-      display: none;
-      gap: 8px;
-    }
-
-    .input-flat {
-      border: 1px solid var(--border-light);
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      outline: none;
-    }
-
-    .cat-item-row {
+    .category-manage-item {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border-light);
     }
 
-    .sub-tag-manage {
+    .cat-item-top {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .sub-tag-chip {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      background: #f0f0f0;
-      padding: 2px 8px;
+      background: var(--active-bg);
+      color: var(--text-main);
+      padding: 4px 10px;
       border-radius: 12px;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 700;
     }
 
-    .preview-thumb {
-      position: relative;
-      width: 50px;
-      height: 50px;
-    }
-
-    .preview-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 4px;
-    }
-
-    .preview-thumb .remove-img-btn {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: rgba(0,0,0,0.7);
-      color: #fff;
-      border-radius: 50%;
-      width: 16px;
-      height: 16px;
-      font-size: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .sub-tag-chip span {
       cursor: pointer;
+      color: #999;
+      margin-left: 4px;
+    }
+
+    .add-cat-form {
+      display: flex;
+      gap: 8px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 14px;
     }
   </style>
 </head>
 <body>
 
-  <div class="app-viewport">
+  <div class="app-container">
     <header>
       <div class="header-top">
-        <h1>備忘錄</h1>
-        <span id="syncStatus" class="sync-badge" onclick="toggleSettings()">設定 GAS</span>
+        <h1><span class="hand-emoji">📝</span> 極簡備忘錄</h1>
+        <span id="syncStatus" class="sync-status">狀態：尚未設定 GAS 網址</span>
       </div>
-      <div class="search-wrapper">
-        <input type="text" id="searchInput" class="search-input" placeholder="搜尋內容...">
-      </div>
+      <input type="text" id="searchInput" class="search-bar" placeholder="搜尋關鍵字...">
     </header>
 
-    <div id="settingsDrawer" class="settings-drawer">
-      <input type="text" id="gasUrlInput" class="input-flat" style="flex:1;" placeholder="貼上 GAS Web App URL">
-      <button onclick="saveGasUrl()" class="btn-black">儲存</button>
+    <!-- 分類選單 -->
+    <div class="folders-section">
+      <div class="folder-header-bar">
+        <span>分類選擇（左右滑動）</span>
+        <button class="manage-btn" onclick="openModal()">⚙️ 管理分類</button>
+      </div>
+      <div class="folder-scroll" id="mainFolderList"></div>
+      <div class="sub-folder-scroll" id="subFolderList"></div>
     </div>
 
-    <section class="nav-section">
-      <div style="display:flex; align-items:center;">
-        <div class="folder-bar" id="mainFolderList"></div>
-        <button class="manage-link" onclick="openCategoryModal()">⚙️ 管理</button>
-      </div>
-      <div class="sub-folder-bar" id="subFolderList"></div>
-    </section>
-
-    <main class="memo-feed" id="memoList"></main>
-    <button class="fab" onclick="openSheet()">＋</button>
-  </div>
-
-  <!-- 新增/編輯 視窗 -->
-  <div id="sheetModal" class="sheet-modal">
-    <div class="sheet-content">
-      <div class="sheet-header">
-        <span class="sheet-title" id="sheetTitle">新備忘記錄</span>
-        <button onclick="closeSheet()" style="background:none; border:none; font-size:1.2rem;">✕</button>
-      </div>
-      <textarea id="memoInput" class="sheet-textarea" placeholder="寫點什麼..."></textarea>
-      <div id="imagePreviewContainer" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
-
-      <div class="sheet-actions">
-        <label style="font-size: 0.85rem; color: var(--text-secondary); cursor: pointer;">
-          📷 附加照片
-          <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+    <!-- 撰寫備忘錄 -->
+    <div class="create-card">
+      <textarea id="memoInput" class="memo-textarea" placeholder="寫下新的紀錄..."></textarea>
+      <div id="imagePreviewContainer" class="image-preview-area"></div>
+      <div class="card-actions">
+        <label class="upload-btn">
+          <span class="hand-emoji">📷</span> 夾帶圖片
+          <input type="file" id="imageInput" accept="image/*" multiple>
         </label>
-        <button id="saveBtn" class="btn-black">儲存</button>
+        <button id="saveBtn" class="save-btn">儲存備忘</button>
       </div>
     </div>
+
+    <!-- GAS 雲端設定 -->
+    <div class="gas-settings">
+      <div class="gas-input-group">
+        <span>GAS URL:</span>
+        <input type="text" id="gasUrlInput" class="gas-input" placeholder="貼上 Google App Script 網址">
+        <button onclick="saveGasUrl()" style="padding: 6px 12px; border-radius: 12px; border:1px solid var(--border-color); cursor: pointer; background: #fff;">儲存</button>
+        <button onclick="syncFromCloud()" style="padding: 6px 12px; border-radius: 12px; border:1px solid var(--border-color); cursor: pointer; background: #fff;">手動讀取</button>
+      </div>
+      <div id="gasDetailStatus" class="gas-status-text">未設定雲端自動備份</div>
+    </div>
+
+    <!-- 備忘清單 -->
+    <div class="memo-list" id="memoList"></div>
   </div>
 
-  <!-- 高效能相簿燈箱 -->
+  <!-- 燈箱相簿 -->
   <div id="lightbox" class="lightbox">
-    <div class="lightbox-header">
-      <div class="lightbox-counter" id="lightboxCounter">1 / 1</div>
-      <button onclick="closeLightbox()" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">✕</button>
-    </div>
-    
-    <div class="lightbox-viewport" id="lightboxViewport">
-      <div class="lightbox-slider" id="lightboxSlider"></div>
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+    <div class="lightbox-img-wrapper" id="lbWrapper">
+      <button class="lb-nav-btn lb-prev" onclick="prevLightboxImage(event)">‹</button>
+      <img id="lightboxImg" src="" alt="放大圖片">
+      <button class="lb-nav-btn lb-next" onclick="nextLightboxImage(event)">›</button>
     </div>
   </div>
 
   <!-- 分類管理視窗 -->
-  <div id="categoryModal" class="sheet-modal" style="z-index: 110;">
-    <div class="sheet-content" style="max-height: 85vh; overflow-y: auto;">
-      <div class="sheet-header">
-        <span class="sheet-title">主/副資料夾設定</span>
-        <button onclick="closeCategoryModal()" style="background:none; border:none; font-size:1.2rem;">✕</button>
+  <div id="categoryModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>自訂分類管理</span>
+        <button class="close-modal" onclick="closeModal()">✕</button>
       </div>
 
       <div id="categoryManageList"></div>
 
-      <div style="display:flex; gap:8px; margin-top: 12px; border-top:1px dashed #ddd; padding-top:12px;">
-        <input type="text" id="newCatIcon" style="width: 45px; text-align:center;" class="input-flat" placeholder="圖示" value="📁">
-        <input type="text" id="newCatName" class="input-flat" style="flex:1;" placeholder="新增主資料夾">
-        <button onclick="addMainCategory()" class="btn-black">新增</button>
+      <div class="add-cat-form">
+        <input type="text" id="newCatIcon" style="width: 50px; padding: 6px; border-radius: 8px; border:1px solid var(--border-color);" placeholder="圖示" value="📌">
+        <input type="text" id="newCatName" style="flex: 1; padding: 6px; border-radius: 8px; border:1px solid var(--border-color);" placeholder="新主分類名稱">
+        <button onclick="addMainCategory()" style="padding: 6px 12px; border-radius: 8px; border:none; background:var(--accent-color); color:#fff; cursor: pointer;">新增</button>
       </div>
     </div>
   </div>
 
   <script>
-    // 預設資料結構
-    let categories = JSON.parse(localStorage.getItem('muji_categories')) || [
+    let categories = JSON.parse(localStorage.getItem('memo_categories')) || [
       { id: 'all', name: '全部', icon: '📝', subs: ['全部'] },
-      { id: 'work', name: '工作', icon: '💼', subs: ['全部', '待辦', '會議'] },
-      { id: 'life', name: '生活', icon: '🏠', subs: ['全部', '購物', '隨筆'] }
+      { id: 'work', name: '工作', icon: '💼', subs: ['全部', '專案', '會議', '待辦'] },
+      { id: 'life', name: '生活', icon: '🏠', subs: ['全部', '購物', '家務'] },
+      { id: 'idea', name: '靈感', icon: '💡', subs: ['全部', '隨筆', '閱讀'] }
     ];
 
     let currentMain = 'all';
     let currentSub = '全部';
-    let memos = JSON.parse(localStorage.getItem('muji_memos')) || [];
+    let memos = JSON.parse(localStorage.getItem('memos')) || [];
     let currentBase64Images = [];
-    let editingMemoId = null;
 
-    // Lightbox 高效能手勢變數
-    let activeGallery = [];
-    let activeImgIndex = 0;
-    
-    // 手勢縮放與位移狀態
-    let scale = 1;
-    let startDistance = 0;
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let isSwiping = false;
+    let currentLightboxImages = [];
+    let currentLightboxIndex = 0;
 
     document.addEventListener('DOMContentLoaded', () => {
       renderMainFolders();
@@ -559,15 +606,31 @@
         syncFromCloud();
       }
 
-      initLightboxGestures();
+      setupLightboxTouch();
     });
 
-    // 1. 分類導覽與排序
+    function updateStatus(text, isError = false) {
+      const timeStr = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const fullMessage = `狀態：${text}`;
+      
+      document.getElementById('syncStatus').innerText = fullMessage;
+      document.getElementById('gasDetailStatus').innerText = `[${timeStr}] ${text}`;
+      
+      if (isError) {
+        document.getElementById('syncStatus').style.color = '#d9534f';
+        document.getElementById('gasDetailStatus').style.color = '#d9534f';
+      } else {
+        document.getElementById('syncStatus').style.color = 'var(--text-muted)';
+        document.getElementById('gasDetailStatus').style.color = 'var(--text-muted)';
+      }
+    }
+
     function renderMainFolders() {
       const container = document.getElementById('mainFolderList');
       container.innerHTML = categories.map(cat => `
-        <button class="chip ${cat.id === currentMain ? 'active' : ''}" onclick="selectMainFolder('${cat.id}')">
-          ${cat.icon} ${cat.name}
+        <button class="folder-btn ${cat.id === currentMain ? 'active' : ''}" onclick="selectMainFolder('${cat.id}')">
+          <span class="hand-emoji">${cat.icon}</span>
+          <span>${cat.name}</span>
         </button>
       `).join('');
     }
@@ -575,10 +638,14 @@
     function renderSubFolders() {
       const container = document.getElementById('subFolderList');
       const activeCat = categories.find(c => c.id === currentMain);
-      if (!activeCat || !activeCat.subs) { container.innerHTML = ''; return; }
+
+      if (!activeCat || !activeCat.subs) {
+        container.innerHTML = '';
+        return;
+      }
 
       container.innerHTML = activeCat.subs.map(sub => `
-        <button class="sub-chip ${sub === currentSub ? 'active' : ''}" onclick="selectSubFolder('${sub}')">
+        <button class="sub-folder-btn ${sub === currentSub ? 'active' : ''}" onclick="selectSubFolder('${sub}')">
           ${sub}
         </button>
       `).join('');
@@ -598,7 +665,232 @@
       renderMemos();
     }
 
-    // 2. 備忘錄渲染與 CRUD 操作
+    function openModal() {
+      renderCategoryManager();
+      document.getElementById('categoryModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('categoryModal').style.display = 'none';
+      saveCategories();
+      renderMainFolders();
+      renderSubFolders();
+      renderMemos();
+    }
+
+    function renderCategoryManager() {
+      const container = document.getElementById('categoryManageList');
+      const editableCategories = categories.filter(c => c.id !== 'all');
+      
+      container.innerHTML = editableCategories.map(cat => `
+        <div class="category-manage-item">
+          <div class="cat-item-top">
+            <span class="hand-emoji">${cat.icon}</span>
+            <strong style="flex:1;">${cat.name}</strong>
+            <button class="delete-btn" onclick="deleteMainCategory('${cat.id}')">刪除</button>
+          </div>
+          <div>
+            <span style="font-size:0.75rem; color:#888;">子分類：</span>
+            ${cat.subs.filter(s => s !== '全部').map(sub => `
+              <span class="sub-tag-chip">
+                ${sub} <span onclick="deleteSubCategory('${cat.id}', '${sub}')">✕</span>
+              </span>
+            `).join('')}
+          </div>
+          <div style="display:flex; gap:6px; margin-top:4px;">
+            <input type="text" id="addSubInput_${cat.id}" placeholder="+ 新增子分類" style="font-size:0.8rem; padding:4px 8px; border-radius:8px; border:1px solid var(--border-color); flex:1;">
+            <button onclick="addSubCategory('${cat.id}')" style="font-size:0.8rem; padding:4px 10px; border-radius:8px; border:1px solid var(--border-color); cursor:pointer;">新增</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addMainCategory() {
+      const icon = document.getElementById('newCatIcon').value.trim() || '📌';
+      const name = document.getElementById('newCatName').value.trim();
+      if (!name) return;
+
+      categories.push({
+        id: 'cat_' + Date.now(),
+        name: name,
+        icon: icon,
+        subs: ['全部', '一般']
+      });
+
+      document.getElementById('newCatName').value = '';
+      saveCategories();
+      renderCategoryManager();
+    }
+
+    function deleteMainCategory(catId) {
+      if (catId === 'all') return;
+      const targetCat = categories.find(c => c.id === catId);
+      if (!targetCat) return;
+
+      if (confirm(`確定要刪除「${targetCat.name}」分類嗎？`)) {
+        categories = categories.filter(c => c.id !== catId);
+        
+        memos.forEach(m => {
+          if (m.mainFolder === catId) {
+            m.mainFolder = 'all';
+            m.subFolder = '一般';
+          }
+        });
+
+        if (currentMain === catId) {
+          currentMain = 'all';
+          currentSub = '全部';
+        }
+        
+        saveCategories();
+        saveData();
+        renderCategoryManager();
+      }
+    }
+
+    function addSubCategory(catId) {
+      const targetCat = categories.find(c => c.id === catId);
+      if (!targetCat) return;
+
+      const input = document.getElementById(`addSubInput_${catId}`);
+      const val = input.value.trim();
+      if (val && !targetCat.subs.includes(val)) {
+        targetCat.subs.push(val);
+        saveCategories();
+        renderCategoryManager();
+      }
+    }
+
+    function deleteSubCategory(catId, subName) {
+      const targetCat = categories.find(c => c.id === catId);
+      if (!targetCat) return;
+
+      targetCat.subs = targetCat.subs.filter(s => s !== subName);
+      saveCategories();
+      renderCategoryManager();
+    }
+
+    function saveCategories() {
+      localStorage.setItem('memo_categories', JSON.stringify(categories));
+    }
+
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+      const files = Array.from(e.target.files);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          currentBase64Images.push(event.target.result);
+          renderImagePreviews();
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    function renderImagePreviews() {
+      const container = document.getElementById('imagePreviewContainer');
+      container.innerHTML = currentBase64Images.map(imgSrc => `
+        <img src="${imgSrc}" class="img-preview">
+      `).join('');
+    }
+
+    function openLightbox(memoId, index) {
+      const targetMemo = memos.find(m => m.id === memoId);
+      if (!targetMemo || !targetMemo.images) return;
+
+      currentLightboxImages = targetMemo.images;
+      currentLightboxIndex = index;
+
+      updateLightboxImage();
+      document.getElementById('lightbox').style.display = 'flex';
+    }
+
+    function updateLightboxImage() {
+      const imgElem = document.getElementById('lightboxImg');
+      imgElem.src = currentLightboxImages[currentLightboxIndex];
+    }
+
+    function prevLightboxImage(e) {
+      if (e) e.stopPropagation();
+      if (currentLightboxIndex > 0) {
+        currentLightboxIndex--;
+        updateLightboxImage();
+      }
+    }
+
+    function nextLightboxImage(e) {
+      if (e) e.stopPropagation();
+      if (currentLightboxIndex < currentLightboxImages.length - 1) {
+        currentLightboxIndex++;
+        updateLightboxImage();
+      }
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').style.display = 'none';
+    }
+
+    function setupLightboxTouch() {
+      const lb = document.getElementById('lightbox');
+      let startX = 0;
+
+      lb.addEventListener('touchstart', e => {
+        startX = e.touches[0].clientX;
+      }, { passive: true });
+
+      lb.addEventListener('touchend', e => {
+        const endX = e.changedTouches[0].clientX;
+        const diffX = startX - endX;
+
+        if (Math.abs(diffX) > 40) {
+          if (diffX > 0) {
+            nextLightboxImage();
+          } else {
+            prevLightboxImage();
+          }
+        }
+      }, { passive: true });
+
+      document.addEventListener('keydown', e => {
+        if (lb.style.display === 'flex') {
+          if (e.key === 'ArrowLeft') prevLightboxImage();
+          if (e.key === 'ArrowRight') nextLightboxImage();
+          if (e.key === 'Escape') closeLightbox();
+        }
+      });
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const text = document.getElementById('memoInput').value.trim();
+      if (!text && currentBase64Images.length === 0) return;
+
+      const newMemo = {
+        id: Date.now(),
+        mainFolder: currentMain === 'all' ? 'work' : currentMain,
+        subFolder: currentSub === '全部' ? '隨筆' : currentSub,
+        content: text,
+        images: [...currentBase64Images],
+        date: new Date().toLocaleString('zh-TW', { hour12: false })
+      };
+
+      memos.unshift(newMemo);
+      saveData();
+
+      document.getElementById('memoInput').value = '';
+      currentBase64Images = [];
+      renderImagePreviews();
+      renderMemos();
+    });
+
+    function deleteMemo(id) {
+      if (confirm('確定要刪除這筆備忘紀錄嗎？')) {
+        memos = memos.filter(m => m.id !== id);
+        saveData();
+        renderMemos();
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('input', renderMemos);
+
     function renderMemos() {
       const keyword = document.getElementById('searchInput').value.toLowerCase();
       const container = document.getElementById('memoList');
@@ -611,374 +903,118 @@
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color: var(--text-tertiary); margin-top: 60px; font-size:0.85rem;">目前沒有備忘紀錄</div>`;
+        container.innerHTML = `<div style="text-align:center; color: var(--text-muted); margin-top: 30px;">尚無備忘紀錄</div>`;
         return;
       }
 
-      container.innerHTML = filtered.map(memo => createMemoCardHtml(memo)).join('');
-    }
-
-    function createMemoCardHtml(memo) {
-      const mainCat = categories.find(c => c.id === memo.mainFolder) || { name: '未分類', icon: '📁' };
-      const imgsJson = JSON.stringify(memo.images || []).replace(/'/g, "&apos;");
-
-      return `
-        <div class="memo-card" id="memo-${memo.id}">
-          <div class="card-meta">
-            <div class="card-tags">
-              <span class="card-tag">${mainCat.icon} ${mainCat.name}</span>
-              <span class="card-tag">#${memo.subFolder}</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:6px;">
-              <span>${memo.date}</span>
-              <button class="btn-action-ghost" onclick="editMemo(${memo.id})">✏️ 編輯</button>
-              <button class="btn-action-ghost" style="color:#ff3b30;" onclick="deleteMemo(${memo.id})">✕</button>
-            </div>
-          </div>
-          ${memo.content ? `<div class="card-text">${escapeHtml(memo.content)}</div>` : ''}
-          ${memo.images && memo.images.length > 0 ? `
-            <div class="card-grid-imgs">
-              ${memo.images.map((img, idx) => `<img src="${img}" onclick='openLightbox(${imgsJson}, ${idx})'>`).join('')}
-            </div>
-          ` : ''}
-        </div>
-      `;
-    }
-
-    // 新增與編輯
-    document.getElementById('saveBtn').addEventListener('click', () => {
-      const text = document.getElementById('memoInput').value.trim();
-      if (!text && currentBase64Images.length === 0) return;
-
-      if (editingMemoId) {
-        const target = memos.find(m => m.id === editingMemoId);
-        if (target) {
-          target.content = text;
-          target.images = [...currentBase64Images];
-          target.date = new Date().toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
-        }
-      } else {
-        const newMemo = {
-          id: Date.now(),
-          mainFolder: currentMain === 'all' ? (categories[1]?.id || 'work') : currentMain,
-          subFolder: currentSub === '全部' ? '隨筆' : currentSub,
-          content: text,
-          images: [...currentBase64Images],
-          date: new Date().toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
-        };
-        memos.unshift(newMemo);
-      }
-
-      localStorage.setItem('muji_memos', JSON.stringify(memos));
-      renderMemos();
-      closeSheet();
-      syncToCloudAsync();
-    });
-
-    function editMemo(id) {
-      const memo = memos.find(m => m.id === id);
-      if (!memo) return;
-
-      editingMemoId = id;
-      document.getElementById('sheetTitle').innerText = '編輯備忘記錄';
-      document.getElementById('memoInput').value = memo.content;
-      currentBase64Images = [...(memo.images || [])];
-      renderImagePreviews();
-
-      document.getElementById('sheetModal').style.display = 'flex';
-      document.getElementById('memoInput').focus();
-    }
-
-    function deleteMemo(id) {
-      if (!confirm('確定刪除此筆備忘錄？')) return;
-      memos = memos.filter(m => m.id !== id);
-      localStorage.setItem('muji_memos', JSON.stringify(memos));
-      
-      const el = document.getElementById(`memo-${id}`);
-      if (el) el.remove();
-      syncToCloudAsync();
-    }
-
-    // 3. 高效能燈箱：雙指縮放與滑動
-    function openLightbox(imgs, index) {
-      activeGallery = imgs;
-      activeImgIndex = index;
-      
-      const slider = document.getElementById('lightboxSlider');
-      slider.innerHTML = activeGallery.map(src => `
-        <div class="lightbox-slide">
-          <img src="${src}" alt="Zoomable Image">
-        </div>
-      `).join('');
-
-      document.getElementById('lightbox').style.display = 'flex';
-      updateSliderPosition(false);
-      resetZoom();
-    }
-
-    function closeLightbox() {
-      document.getElementById('lightbox').style.display = 'none';
-      resetZoom();
-    }
-
-    function updateSliderPosition(animate = true) {
-      const slider = document.getElementById('lightboxSlider');
-      slider.style.transition = animate ? 'transform 0.25s cubic-bezier(0.25, 1, 0.5, 1)' : 'none';
-      slider.style.transform = `translate3d(${-activeImgIndex * 100}%, 0, 0)`;
-      document.getElementById('lightboxCounter').innerText = `${activeImgIndex + 1} / ${activeGallery.length}`;
-    }
-
-    function resetZoom() {
-      scale = 1;
-      const imgs = document.querySelectorAll('.lightbox-slide img');
-      imgs.forEach(img => {
-        img.style.transform = `scale(1) translate(0px, 0px)`;
-      });
-    }
-
-    function initLightboxGestures() {
-      const viewport = document.getElementById('lightboxViewport');
-
-      viewport.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 2) {
-          startDistance = getDistance(e.touches[0], e.touches[1]);
-        } else if (e.touches.length === 1) {
-          touchStartX = e.touches[0].clientX;
-          touchStartY = e.touches[0].clientY;
-          isSwiping = true;
-        }
-      }, { passive: true });
-
-      viewport.addEventListener('touchmove', (e) => {
-        const activeImg = document.querySelectorAll('.lightbox-slide img')[activeImgIndex];
-
-        if (e.touches.length === 2 && activeImg) {
-          const newDistance = getDistance(e.touches[0], e.touches[1]);
-          if (startDistance > 0) {
-            const factor = newDistance / startDistance;
-            scale = Math.min(Math.max(scale * factor, 1), 4);
-            activeImg.style.transform = `scale(${scale})`;
-            startDistance = newDistance;
-          }
-        } else if (e.touches.length === 1 && scale === 1 && isSwiping) {
-          const diffX = e.touches[0].clientX - touchStartX;
-          const slider = document.getElementById('lightboxSlider');
-          slider.style.transition = 'none';
-          slider.style.transform = `translate3d(calc(${-activeImgIndex * 100}% + ${diffX}px), 0, 0)`;
-        }
-      }, { passive: true });
-
-      viewport.addEventListener('touchend', (e) => {
-        if (scale === 1 && isSwiping && e.changedTouches.length > 0) {
-          const diffX = e.changedTouches[0].clientX - touchStartX;
-          if (diffX < -50 && activeImgIndex < activeGallery.length - 1) {
-            activeImgIndex++;
-          } else if (diffX > 50 && activeImgIndex > 0) {
-            activeImgIndex--;
-          }
-          updateSliderPosition(true);
-        }
-        isSwiping = false;
-        startDistance = 0;
-      }, { passive: true });
-    }
-
-    function getDistance(t1, t2) {
-      return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-    }
-
-    // 4. Modal 控制與圖片縮圖管理
-    function openSheet() {
-      editingMemoId = null;
-      document.getElementById('sheetTitle').innerText = '新備忘記錄';
-      document.getElementById('sheetModal').style.display = 'flex';
-      document.getElementById('memoInput').focus();
-    }
-
-    function closeSheet() {
-      document.getElementById('sheetModal').style.display = 'none';
-      document.getElementById('memoInput').value = '';
-      currentBase64Images = [];
-      editingMemoId = null;
-      document.getElementById('imagePreviewContainer').innerHTML = '';
-      document.getElementById('imageInput').value = '';
-    }
-
-    function renderImagePreviews() {
-      document.getElementById('imagePreviewContainer').innerHTML = currentBase64Images.map((img, idx) => `
-        <div class="preview-thumb">
-          <img src="${img}">
-          <div class="remove-img-btn" onclick="removePreviewImage(${idx})">✕</div>
-        </div>
-      `).join('');
-    }
-
-    function removePreviewImage(idx) {
-      currentBase64Images.splice(idx, 1);
-      renderImagePreviews();
-    }
-
-    // 依選擇順序讀取圖片
-    document.getElementById('imageInput').addEventListener('change', function(e) {
-      const files = Array.from(e.target.files);
-      if (files.length === 0) return;
-
-      const readAsDataURL = (file) => {
-        return new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (event) => resolve(event.target.result);
-          reader.readAsDataURL(file);
-        });
-      };
-
-      Promise.all(files.map(readAsDataURL)).then(base64List => {
-        currentBase64Images = currentBase64Images.concat(base64List);
-        renderImagePreviews();
-      });
-    });
-
-    // 5. 分類管理 (修正精準ID刪除與排序)
-    function openCategoryModal() {
-      renderCategoryManager();
-      document.getElementById('categoryModal').style.display = 'flex';
-    }
-
-    function closeCategoryModal() {
-      document.getElementById('categoryModal').style.display = 'none';
-      localStorage.setItem('muji_categories', JSON.stringify(categories));
-      renderMainFolders();
-      renderSubFolders();
-      renderMemos();
-    }
-
-    function renderCategoryManager() {
-      const container = document.getElementById('categoryManageList');
-      // 過濾掉 'all' 的主分類
-      const filterCats = categories.filter(c => c.id !== 'all');
-
-      container.innerHTML = filterCats.map((cat) => {
-        const realIdx = categories.findIndex(c => c.id === cat.id);
+      container.innerHTML = filtered.map(memo => {
+        const mainCat = categories.find(c => c.id === memo.mainFolder) || { name: '預設/未分類', icon: '📁' };
         return `
-          <div class="cat-item-row">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span>${cat.icon} <strong>${cat.name}</strong></span>
-              <div style="display:flex; gap:4px;">
-                <button class="btn-small" onclick="moveCategory('${cat.id}', -1)">▲</button>
-                <button class="btn-small" onclick="moveCategory('${cat.id}', 1)">▼</button>
-                <button class="btn-action-ghost" style="color:#ff3b30;" onclick="deleteMainCat('${cat.id}')">刪除</button>
+          <div class="memo-item">
+            <div class="memo-header">
+              <div class="memo-tags">
+                <span class="memo-tag">${mainCat.icon} ${mainCat.name}</span>
+                <span class="memo-tag"># ${memo.subFolder}</span>
+              </div>
+              <div>
+                <span style="color:var(--text-muted); margin-right:8px;">${memo.date}</span>
+                <button class="delete-btn" onclick="deleteMemo(${memo.id})">✕</button>
               </div>
             </div>
-            <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:4px;">
-              ${cat.subs.filter(s => s !== '全部').map(sub => `
-                <span class="sub-tag-manage">
-                  #${sub}
-                  <span style="cursor:pointer; font-weight:bold;" onclick="removeSubCategory('${cat.id}', '${sub}')">×</span>
-                </span>
-              `).join('')}
-              <button class="btn-small" onclick="addSubCategory('${cat.id}')">＋新增子分類</button>
-            </div>
+            ${memo.content ? `<div class="memo-content">${escapeHtml(memo.content)}</div>` : ''}
+            ${memo.images && memo.images.length > 0 ? `
+              <div class="memo-images">
+                ${memo.images.map((img, idx) => `<img src="${img}" onclick="openLightbox(${memo.id}, ${idx})">`).join('')}
+              </div>
+            ` : ''}
           </div>
         `;
       }).join('');
-    }
-
-    function moveCategory(catId, direction) {
-      const idx = categories.findIndex(c => c.id === catId);
-      if (idx === -1) return;
-      const targetIdx = idx + direction;
-      if (targetIdx < 1 || targetIdx >= categories.length) return; // 保護 0 (全部) 不受移動
-
-      const temp = categories[idx];
-      categories[idx] = categories[targetIdx];
-      categories[targetIdx] = temp;
-      renderCategoryManager();
-    }
-
-    function addSubCategory(catId) {
-      const subName = prompt('請輸入新副資料夾/標籤名稱：');
-      if (!subName) return;
-      const cat = categories.find(c => c.id === catId);
-      if (cat && !cat.subs.includes(subName)) {
-        cat.subs.push(subName);
-        renderCategoryManager();
-      }
-    }
-
-    function removeSubCategory(catId, subName) {
-      const cat = categories.find(c => c.id === catId);
-      if (cat) {
-        cat.subs = cat.subs.filter(s => s !== subName);
-        renderCategoryManager();
-      }
-    }
-
-    function addMainCategory() {
-      const icon = document.getElementById('newCatIcon').value.trim() || '📁';
-      const name = document.getElementById('newCatName').value.trim();
-      if (!name) return;
-
-      categories.push({ id: 'cat_' + Date.now(), name: name, icon: icon, subs: ['全部', '一般'] });
-      document.getElementById('newCatName').value = '';
-      renderCategoryManager();
-    }
-
-    function deleteMainCat(catId) {
-      if (catId === 'all') return;
-      if (confirm('確定刪除此資料夾？')) {
-        categories = categories.filter(c => c.id !== catId);
-        if (currentMain === catId) currentMain = 'all';
-        renderCategoryManager();
-      }
-    }
-
-    // 搜尋與設定
-    document.getElementById('searchInput').addEventListener('input', renderMemos);
-
-    function toggleSettings() {
-      const el = document.getElementById('settingsDrawer');
-      el.style.display = el.style.display === 'flex' ? 'none' : 'flex';
     }
 
     function escapeHtml(str) {
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
+    function saveData() {
+      localStorage.setItem('memos', JSON.stringify(memos));
+      syncToCloud();
+    }
+
     function saveGasUrl() {
       const url = document.getElementById('gasUrlInput').value.trim();
       localStorage.setItem('gas_script_url', url);
-      toggleSettings();
+      updateStatus('GAS URL 已儲存');
       syncFromCloud();
     }
 
-    function syncToCloudAsync() {
+    /* 修正核心：雲端上傳 (POST) */
+    function syncToCloud() {
       const gasUrl = localStorage.getItem('gas_script_url');
-      if (!gasUrl) return;
+      if (!gasUrl) {
+        updateStatus('未設定 GAS 網址（僅本機保存）');
+        return;
+      }
 
-      document.getElementById('syncStatus').innerText = '同步中...';
+      updateStatus('自動備份上傳中...');
+
       fetch(gasUrl, {
         method: 'POST',
+        mode: 'cors',
+        redirect: 'follow',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(memos)
       })
-      .then(() => document.getElementById('syncStatus').innerText = '已同步')
-      .catch(() => document.getElementById('syncStatus').innerText = '離線儲存');
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP 錯誤狀態: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (data && data.status === 'success') {
+          updateStatus('已自動備份至 GAS 雲端');
+        } else {
+          updateStatus('備份回應異常', true);
+        }
+      })
+      .catch(err => {
+        console.error('GAS 自動同步錯誤:', err);
+        updateStatus('自動備份失敗：請檢查網址或權限設定', true);
+      });
     }
 
+    /* 修正核心：雲端讀取 (GET) */
     function syncFromCloud() {
       const gasUrl = localStorage.getItem('gas_script_url');
-      if (!gasUrl) return;
+      if (!gasUrl) {
+        updateStatus('請先輸入並儲存 GAS 網址', true);
+        return;
+      }
 
-      fetch(gasUrl)
-      .then(res => res.json())
+      updateStatus('讀取雲端資料中...');
+
+      fetch(gasUrl, {
+        method: 'GET',
+        mode: 'cors',
+        redirect: 'follow'
+      })
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP 錯誤狀態: ${res.status}`);
+        return res.json();
+      })
       .then(data => {
         if (Array.isArray(data)) {
           memos = data;
-          localStorage.setItem('muji_memos', JSON.stringify(memos));
+          localStorage.setItem('memos', JSON.stringify(memos));
           renderMemos();
-          document.getElementById('syncStatus').innerText = '已同步';
+          updateStatus('雲端資料同步完成');
+        } else {
+          updateStatus('雲端無資料或格式不符');
         }
       })
-      .catch(() => document.getElementById('syncStatus').innerText = '離線模式');
+      .catch(err => {
+        console.error('GAS 讀取錯誤:', err);
+        updateStatus('雲端讀取失敗：請檢查網址或權限設定', true);
+      });
     }
   </script>
 </body>
